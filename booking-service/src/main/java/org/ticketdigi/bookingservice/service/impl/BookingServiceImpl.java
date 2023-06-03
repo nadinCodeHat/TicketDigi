@@ -3,6 +3,7 @@ package org.ticketdigi.bookingservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,6 +11,7 @@ import org.ticketdigi.bookingservice.dto.AmountDto;
 import org.ticketdigi.bookingservice.dto.BookingDto;
 import org.ticketdigi.bookingservice.dto.BookingResponse;
 import org.ticketdigi.bookingservice.dto.ParkingDetailsDto;
+import org.ticketdigi.bookingservice.event.BookingPlacedEvent;
 import org.ticketdigi.bookingservice.repository.BookingRepository;
 import org.ticketdigi.bookingservice.repository.ParkingDetailsRepository;
 import org.ticketdigi.bookingservice.service.BookingService;
@@ -25,6 +27,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ParkingDetailsRepository parkingDetailsRepository;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaTemplate<String, BookingPlacedEvent> kafkaTemplate;
 
     public String generateToken() {
         return UUID.randomUUID().toString();
@@ -73,6 +76,9 @@ public class BookingServiceImpl implements BookingService {
                 } else {
                     updateParkingDetails.setAvailability(false);
                     parkingDetailsRepository.save(updateParkingDetails);
+
+                    // Kafka
+                    kafkaTemplate.send("notificationTopic", new BookingPlacedEvent(parkingDetails.getId()));
                 }
 
                 return new ResponseEntity<>( "Parking slot Booked successfully", HttpStatus.CREATED);
