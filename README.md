@@ -9,3 +9,5 @@ Parking ticket managment system
 - Resilience4J
 - Keycloak
 - Zipkin
+- Prometheus
+- Grafana
