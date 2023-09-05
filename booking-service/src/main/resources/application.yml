@@ -1,0 +1,76 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: "booking-service"
+  datasource:
+    url: jdbc:mysql://localhost:3306/ticketdigi?useSSL=false&createDatabaseIfNotExist=true
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+# Zipkin properties
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+# Kafka Properties
+  kafka:
+    bootstrap-servers: localhost:9092
+    template:
+      default-topic: notificationTopic
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: event:org.ticketdigi.bookingservice.event.BookingPlacedEvent
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+# Resilience4j Properties
+resilience4j:
+  circuitbreaker:
+    instances:
+      service-instance:
+        registerHealthIndicator: true
+        event-consumer-buffer-size: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+# Resilience4j Timeout Properties
+  timelimiter:
+    instances:
+      service-instance:
+        timeout-duration: 3s
+# Resilience4j Retry Properties
+  retry:
+    instances:
+      service-instance:
+        max-attempts: 3
+        wait-duration: 5s

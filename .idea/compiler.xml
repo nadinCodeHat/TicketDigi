@@ -16,6 +16,15 @@
         <module name="notification-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="api-gateway" target="1.8" />
+      <module name="booking-service" target="1.8" />
+      <module name="discovery-service" target="1.8" />
+      <module name="notification-service" target="1.8" />
+      <module name="parking-details-service" target="1.8" />
+      <module name="payment-service" target="1.8" />
+      <module name="ticketdigi-model" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

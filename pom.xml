@@ -22,7 +22,7 @@
         <module>parking-details-service</module>
         <module>ticketdigi-model</module>
         <module>api-gateway</module>
-      <module>payment-service</module>
+        <module>payment-service</module>
         <module>notification-service</module>
     </modules>
 
